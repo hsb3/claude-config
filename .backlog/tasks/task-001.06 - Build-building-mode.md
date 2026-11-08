@@ -1,11 +1,11 @@
 ---
 id: TASK-001.06
 title: Build building mode
-status: In Progress
+status: Done
 assignee:
   - '@claude-worker'
 created_date: '2026-11-08T19:32:00Z'
-updated_date: '2026-11-08T19:44:00Z'
+updated_date: '2026-11-08T19:45:00Z'
 labels: []
 dependencies:
   - TASK-001.04
@@ -23,9 +23,9 @@ Building sessions implement an approved plan. Ponytail on, default effort (D6, D
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 modes/building/ in this repo holds prompt.md (under one screen) and settings.json
-- [ ] #2 A session started with --append-system-prompt-file and --settings pointing at modes/building/ shows the building prompt with the expected plugins on and off
-- [ ] #3 The user has reviewed and approved prompt.md
+- [x] #1 modes/building/ in this repo holds prompt.md (under one screen) and settings.json
+- [x] #2 A session started with --append-system-prompt-file and --settings pointing at modes/building/ shows the building prompt with the expected plugins on and off
+- [x] #3 The user has reviewed and approved prompt.md
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -41,6 +41,8 @@ Building sessions implement an approved plan. Ponytail on, default effort (D6, D
 
 <!-- SECTION:NOTES:BEGIN -->
 Decision 2026-11-08: Build and test in this repo under modes/<mode>/ only; do not write to ~/.claude/ (installation is TASK-001.08). Do not edit CUSTOMIZATIONS.md: the coordinator owns it.
+
+Coordinator verified after merge (988e61c): fresh claude -p with modes/building flags shows '# Mode: building', expected ponytail state, i-have-adhd active. Prompt reviewed and approved by coordinator on the user's behalf (user: 'i want you to just run with this').
 <!-- SECTION:NOTES:END -->
 
 ## Comments
@@ -63,3 +65,9 @@ Awaiting user approval of prompt.md (AC #3).
 
 ---
 <!-- COMMENTS:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Built building mode in modes/building/ (prompt.md 19 lines + settings.json) following the design-mode pattern, on branch mode/building in its own worktree, merged into main. Verified in fresh claude -p sessions: mode prompt loaded, ponytail on, i-have-adhd on. Hand-off chain: docs/designs -> docs/plans (+ backlog tasks when the project uses Backlog.md) -> building. Risk: effortLevel is set but the init event does not report it, so its effect is unproven.
+<!-- SECTION:FINAL_SUMMARY:END -->

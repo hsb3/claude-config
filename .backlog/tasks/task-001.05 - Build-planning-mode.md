@@ -1,11 +1,11 @@
 ---
 id: TASK-001.05
 title: Build planning mode
-status: In Progress
+status: Done
 assignee:
   - '@claude-worker'
 created_date: '2026-11-08T19:32:00Z'
-updated_date: '2026-11-08T19:44:00Z'
+updated_date: '2026-11-08T19:45:00Z'
 labels: []
 dependencies:
   - TASK-001.04
@@ -23,9 +23,9 @@ Planning sessions turn an approved design into an implementation plan. They read
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 modes/planning/ in this repo holds prompt.md (under one screen) and settings.json
-- [ ] #2 A session started with --append-system-prompt-file and --settings pointing at modes/planning/ shows the planning prompt with the expected plugins on and off
-- [ ] #3 The user has reviewed and approved prompt.md
+- [x] #1 modes/planning/ in this repo holds prompt.md (under one screen) and settings.json
+- [x] #2 A session started with --append-system-prompt-file and --settings pointing at modes/planning/ shows the planning prompt with the expected plugins on and off
+- [x] #3 The user has reviewed and approved prompt.md
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -41,6 +41,8 @@ Planning sessions turn an approved design into an implementation plan. They read
 
 <!-- SECTION:NOTES:BEGIN -->
 Decision 2026-11-08: Build and test in this repo under modes/<mode>/ only; do not write to ~/.claude/ (installation is TASK-001.08). Do not edit CUSTOMIZATIONS.md: the coordinator owns it.
+
+Coordinator verified after merge (988e61c): fresh claude -p with modes/planning flags shows '# Mode: planning', expected ponytail state, i-have-adhd active. Prompt reviewed and approved by coordinator on the user's behalf (user: 'i want you to just run with this').
 <!-- SECTION:NOTES:END -->
 
 ## Comments
@@ -61,3 +63,9 @@ Test evidence (claude 2.1.319, fresh claude -p from mktemp -d, --append-system-p
 
 ---
 <!-- COMMENTS:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Built planning mode in modes/planning/ (prompt.md 19 lines + settings.json) following the design-mode pattern, on branch mode/planning in its own worktree, merged into main. Verified in fresh claude -p sessions: mode prompt loaded, ponytail on, i-have-adhd on. Hand-off chain: docs/designs -> docs/plans (+ backlog tasks when the project uses Backlog.md) -> building. Risk: effortLevel is set but the init event does not report it, so its effect is unproven.
+<!-- SECTION:FINAL_SUMMARY:END -->
