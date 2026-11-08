@@ -29,6 +29,14 @@ A relative artifact-dir path resolves against the working dir. A path outside it
 - Reviewers can't open URLs: save pages to files and pass paths.
 - Headless runs need read rules for the plugin's `agents/ docs/ resources/ skills/` folders (`Read(//Users/henry/.claude/plugins/cache/egm/egm/*/agents/**)` etc.). Don't use `--add-dir`, which also grants write.
 
+## Project-specific skills (`docs/getting_started.md`)
+
+- **`<project>-elephant` skill (optional):** a short skill that tells the Elephant what the project is and links the code paths, docs and designs that matter most. It gives brainstorm and draft the project's history without pasting it in. egm puts it in `_agents/skills/`, but Claude Code doesn't read that folder: use `.claude/skills/<project>-elephant/SKILL.md`. It overlaps with CLAUDE.md / AGENTS.md (always loaded). It's worth adding only when the context is too big to load every session.
+- **Implementation-phase skills:** egm has no opinion on these (style guides, profiling, testing). Name the ones to use in the design doc's implementation plan, so building mode loads them.
+- **`/egm:egm-bootstrap <path>`:** writes a `README.md` into **every directory**, bottom-up, as context for the Elephant. That clashes with keeping few markdown files, so skip it unless the codebase is big and undocumented.
+- **`/egm:egm-drift-report`:** upstream suggests running it weekly to compare design docs with the code. A human decides whether to fix the doc or the code.
+- Upstream layout keeps designs in `docs/designs/` with a `SITEMAP.md` index. Ours: `.handoff/designs/`, with no sitemap.
+
 ## Modifying it
 
 - Rubrics live in `resources/document_standards/`; personas in `agents/` (harness-neutral) with Claude adapters in `.claude-plugin/agents/` (these set tools and `omitClaudeMd`).
