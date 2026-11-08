@@ -18,7 +18,7 @@ Review stages run in order (5 → 9): zoom-out (YAGNI, reuse), comprehension (na
 | Final design doc (egm-draft) | `docs/designs/<feature>.md` | Pass a dir: `/egm:egm-draft .handoff/designs/`, or pick "Specify custom target directory" at the gate |
 | brainstorm "Publish as RFC" | `docs/designs/<feature>.md` + `SITEMAP.md` | **Hard-coded.** Pick "Proceed to egm-draft" instead |
 
-A relative artifact-dir path resolves against the working dir. A path outside it triggers a confirm prompt (headless: falls back to the working dir).
+Ours: `EGM artifact directory: .handoff/egm` in `~/.claude/AGENTS.md` (tested 2026-11-08: a review wrote only to `.handoff/egm/`). A relative artifact-dir path resolves against the working dir. A path outside it triggers a confirm prompt (headless: falls back to the working dir).
 
 ## Invoking it
 
