@@ -92,3 +92,18 @@ claude -p --tools "" --append-system-prompt-file "$PWD/prompt.md" "Without using
 - Control (same command without the flag): the session reports NONE for `Marker:` lines, so the markers came only from the file.
 - `--tools ""` blocks file reads, so the model could only see the file through the system prompt.
 - Gotcha: `--tools ""` also eats the next argument if the prompt comes right after it. Use `--tools=""`, or put another flag between them.
+
+## Terminal title: use `--name`, not a title set before launch [2.1.319, TASK-001.07]
+
+Claude Code writes its own tab title at startup (OSC 0), so a title printed by a launcher before `exec claude` is overwritten straight away. `--name <name>` sets the session name, which claude puts in the title itself.
+
+| Started as | Title escape captured in a pty (10 s, in a trusted folder) |
+|---|---|
+| `claude` | `✳ Claude Code` |
+| `claude --name design` | `✳ design` |
+
+- `terminalTitleFromRename` (setting, default `true`): `/rename` and the session name drive the title; `false` keeps auto-generated topic titles instead. `CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1` stops claude writing a title at all.
+- The name also shows in the prompt box and the `/resume` picker, so every session started by `cmode design` is named `design` there. `/rename` still works.
+- Not tested: whether the title stays after the first reply, since that needs a real API turn. The schema text implies the name wins over topic titles while `terminalTitleFromRename` is `true`.
+- Gotcha: in an untrusted folder the trust dialog comes first and no title was written within 10 s.
+- Gotcha: claude ignores SIGTERM under a pty, so a test harness waiting on it hangs. Use SIGKILL.

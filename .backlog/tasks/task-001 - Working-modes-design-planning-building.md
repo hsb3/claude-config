@@ -1,9 +1,10 @@
 ---
 id: TASK-001
 title: 'Working modes: design, planning, building'
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-11-08T19:32:00Z'
+updated_date: '2026-11-08T19:50:00Z'
 labels: []
 dependencies: []
 documentation:
@@ -20,7 +21,13 @@ I want each Claude Code session to start in a working mode with its own mindset,
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Design, planning and building modes each start from one command
-- [ ] #2 A plain `claude` session is unchanged: no mode files load
-- [ ] #3 Every change under ~/.claude is logged in CUSTOMIZATIONS.md
+- [x] #1 Design, planning and building modes each start from one command
+- [x] #2 A plain `claude` session is unchanged: no mode files load
+- [x] #3 Every change under ~/.claude is logged in CUSTOMIZATIONS.md
 <!-- AC:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Working modes shipped: design, planning and building, each started with `cmode <mode>`. Built and tested in this repo (modes/, bin/), installed by copy into ~/.claude/modes/ and ~/.local/bin/cmode, plain claude sessions unchanged (tested). All subtasks .01-.08 Done; changes logged in CUSTOMIZATIONS.md; findings in claude-code-knowledge.md.
+<!-- SECTION:FINAL_SUMMARY:END -->

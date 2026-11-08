@@ -1,0 +1,22 @@
+#!/bin/sh
+# cmode <mode> [claude args...]: start claude in a working mode (see MODES-DESIGN.md).
+root="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/modes"
+mode="$1"
+case "$mode" in */*|.*) bad=1 ;; esac
+
+if [ -z "$mode" ] || [ -n "$bad" ] || [ ! -f "$root/$mode/prompt.md" ] || [ ! -f "$root/$mode/settings.json" ]; then
+  [ -n "$mode" ] && echo "cmode: unknown mode '$mode'" >&2
+  echo "usage: cmode <mode> [claude args...]" >&2
+  echo "modes:" >&2
+  for d in "$root"/*/; do
+    [ -f "${d}prompt.md" ] && echo "  $(basename "$d")" >&2
+  done
+  exit 2
+fi
+shift
+
+d="$root/$mode"
+# --name sets claude's own terminal title; a title printed here would be overwritten.
+set -- --name "$mode" --append-system-prompt-file "$d/prompt.md" --settings "$d/settings.json" "$@"
+[ -f "$d/mcp.json" ] && set -- --mcp-config "$d/mcp.json" "$@"
+exec claude "$@"

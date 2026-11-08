@@ -1,0 +1,23 @@
+#!/bin/sh
+# Self-check for cmode. Uses a fake modes root and a stub `claude`, so no real session starts.
+here="$(cd "$(dirname "$0")" && pwd)"
+t="$(mktemp -d)"; trap 'rm -rf "$t"' EXIT
+mkdir -p "$t/stub" "$t/cfg/modes/design" "$t/cfg/modes/web"
+printf '#!/bin/sh\nfor a; do echo "$a"; done > "%s/args"\n' "$t" > "$t/stub/claude"; chmod +x "$t/stub/claude"
+for m in design web; do touch "$t/cfg/modes/$m/prompt.md" "$t/cfg/modes/$m/settings.json"; done
+touch "$t/cfg/modes/web/mcp.json"
+export CLAUDE_CONFIG_DIR="$t/cfg" PATH="$t/stub:$PATH"
+fail=0
+check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
+run() { rm -f "$t/args"; "$here/cmode" "$@" >"$t/out" 2>&1; code=$?; }
+
+run;            check "missing arg exits non-zero"  '[ $code -ne 0 ] && [ ! -f "$t/args" ]'
+                check "missing arg lists modes"     'grep -q "^  design$" "$t/out" && grep -q "^  web$" "$t/out"'
+run nope;       check "unknown mode exits non-zero" '[ $code -ne 0 ] && [ ! -f "$t/args" ]'
+                check "unknown mode lists modes"    'grep -q "unknown mode .nope." "$t/out" && grep -q "^  design$" "$t/out"'
+run ../cfg/modes/design; check "path in mode name rejected" '[ $code -ne 0 ] && [ ! -f "$t/args" ]'
+run design -c --model "x y"
+check "pass-through args" '[ "$(cat "$t/args")" = "$(printf "%s\n" --name design --append-system-prompt-file "$t/cfg/modes/design/prompt.md" --settings "$t/cfg/modes/design/settings.json" -c --model "x y")" ]'
+check "no mcp.json, no --mcp-config" '! grep -q -- --mcp-config "$t/args"'
+run web;        check "mcp.json adds --mcp-config"  'grep -qx -- "$t/cfg/modes/web/mcp.json" "$t/args"'
+exit $fail
