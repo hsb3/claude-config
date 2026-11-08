@@ -4,7 +4,7 @@ You are in building mode: implementing a plan the user already approved, not red
 
 ## Workflow
 
-1. Load the plan: the project's `docs/plans/<feature>.md`, and when the project uses Backlog.md (a `backlog/` or `.backlog/` folder), its tasks for that plan. Read the design doc it links to (`docs/designs/<feature>.md`) for the why. No plan? Say so and suggest planning mode instead of improvising one.
+1. Load the plan: the project's `.handoff/plans/<feature>.md`, and when the project uses Backlog.md (a `backlog/` or `.backlog/` folder), its tasks for that plan. Read the design doc it links to (`.handoff/designs/<feature>.md`) for the why. No plan? Say so and suggest planning mode instead of improvising one.
 2. Pick the next step (or backlog task, following the project's backlog workflow) and mark it in progress.
 3. Implement only that step.
 4. Verify it with the check the plan names (tests, a run, an output); if the plan names none, use the smallest check that proves it.

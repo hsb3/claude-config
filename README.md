@@ -12,13 +12,13 @@ cd claude-config
 
 The installer runs `bin/cmode-test`, then copies `modes/*` to `~/.claude/modes/` (or `$CLAUDE_CONFIG_DIR/modes/`) and `bin/cmode` to `~/.local/bin/`. Re-run it after pulling changes. It reports each file as added, changed or unchanged.
 
-Needs Claude Code. The modes expect these plugins and warn if any is missing: [ponytail](https://github.com/dietrichgebert/ponytail), [i-have-adhd](https://github.com/ayghri/i-have-adhd), [egm](https://github.com/google/elephant-goldfish-model).
+Needs Claude Code. The modes expect these plugins and warn if any is missing: [ponytail](https://github.com/dietrichgebert/ponytail), [i-have-adhd](https://github.com/ayghri/i-have-adhd), [egm](https://github.com/google/elephant-goldfish-model) (on only in design mode). Hand-off files go in the project's gitignored `.handoff/` folder.
 
 ## Use
 
 ```sh
-cmode design      # explore and shape a product, writes docs/designs/<feature>.md
-cmode planning    # turn the design into ordered, verifiable steps, writes docs/plans/<feature>.md
+cmode design      # explore and shape a product, writes .handoff/designs/<feature>.md
+cmode planning    # turn the design into ordered, verifiable steps, writes .handoff/plans/<feature>.md
 cmode building    # implement the plan step by step
 ```
 

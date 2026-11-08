@@ -4,7 +4,7 @@ Status: built (`modes/`, `bin/cmode`, `install.sh`). Updated 2026-11-08.
 
 ## Goal
 
-Start a Claude Code session in a **mode** (product design, implementation planning, building). Each mode brings its own mindset and workflow. Only the mode's prompt and its setting overrides are limited to that mode. Memory, history and the base plugins (including egm) are shared by every session.
+Start a Claude Code session in a **mode** (product design, implementation planning, building). Each mode brings its own mindset and workflow. Only the mode's prompt and its setting overrides are limited to that mode. Memory, history and the base plugins are shared by every session; egm loads only in design mode.
 
 ## Facts the design depends on (Claude Code 2.1.319)
 
@@ -51,11 +51,11 @@ The launcher is [`bin/cmode`](bin/cmode): `cmode <mode> [claude args]` runs `cla
 | D3 | Memory and history: **shared** across modes. |
 | D4 | Mode files: `${CLAUDE_CONFIG_DIR:-~/.claude}/modes/<mode>/` → `prompt.md` (about 20 lines), `settings.json`, optional `mcp.json`. |
 | D5 | Each mode defines: mindset (2–3 sentences), workflow steps, plugins on/off, MCPs, model and effort. |
-| D6 | Plugins: ponytail **off** in design, on in planning and building. i-have-adhd on everywhere. egm is enabled everywhere and suggested in design. |
+| D6 | Plugins: ponytail **off** in design, on in planning and building. i-have-adhd on everywhere. egm **off** in the base and **on** only in design (owner, 2026-11-08), so plain `claude` has no `/egm` commands. |
 | D7 | Effort: `effortLevel: high` in design and planning; building sets none, so it gets Claude Code's built-in default (`medium` on 2.1.319). |
 | D8 | Plain `claude` = today's setup. Modes are opt-in. |
 | D9 | One mode per session. No mid-session switching, and resuming a session from another mode is not supported. |
-| D10 | Hand-off: design writes `docs/designs/<feature>.md`, planning writes `docs/plans/<feature>.md`, building reads both. **Provisional**, see Open items. |
+| D10 | Hand-off: design writes `.handoff/designs/<feature>.md`, planning writes `.handoff/plans/<feature>.md`, building reads both. `.handoff/` is gitignored in the project; the prompts add it if missing (owner, 2026-11-08: no working files in `docs/`). egm-draft defaults to `docs/designs/` but takes a target dir; egm-brainstorm's "Publish as RFC" option hard-codes `docs/designs/`, so the design prompt steers around it. |
 | D11 | Active mode shown in the terminal tab title, via `--name`. |
 
 ## Open items
@@ -63,5 +63,3 @@ The launcher is [`bin/cmode`](bin/cmode): `cmode <mode> [claude args]` runs `cla
 - **Version drift.** The facts above are pinned to 2.1.319. Re-run the probes in claude-code-knowledge.md after a Claude Code upgrade.
 - **Shared memory.** Notes saved in one mode load in every other mode, and the memory index is per project folder, not per mode.
 - **Effort.** Probe passed (TASK-003): `effortLevel` from `--settings` reaches the API request, so D7 works as built.
-- **D10 hand-off location.** Working files in `docs/` are not loved; a gitignored `.handoff/` folder is the alternative. Owner to decide.
-- **egm scope.** egm loads in every mode because the base enables it. The alternative is off in the base and on in `modes/design/settings.json`, which makes the Goal stricter but removes egm from plain `claude`. Owner to decide.

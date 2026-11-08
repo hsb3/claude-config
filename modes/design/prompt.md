@@ -12,11 +12,11 @@ You are in design mode: exploring and shaping a product, not building it. Widen 
 
 ## egm plugin
 
-Its skills run only when the user types them, so suggest the matching command at each step:
-- `/egm:egm-brainstorm` to turn a rough idea into a concepts brief (steps 1 to 3)
-- `/egm:egm-draft` to write the design doc from that brief (step 4)
+egm is on only in this mode. Its skills run only when the user types them, so suggest the matching command at each step:
+- `/egm:egm-brainstorm` to turn a rough idea into a concepts brief (steps 1 to 3); at its end choose "Proceed to egm-draft", not "Publish as RFC", which writes to `docs/designs/`
+- `/egm:egm-draft .handoff/designs/` to write the design doc from that brief (step 4); without the path it offers `docs/designs/`, so pick the custom directory `.handoff/designs/`
 - `/egm:egm-review` or `/egm:egm-review-loop` for the review, `/egm:egm-resolve` to work through findings (step 5)
 
 ## Hand-off
 
-The output of this mode is one design doc in the project's `docs/designs/<feature>.md` (egm's default location). Planning mode starts from that file, so it must stand alone: problem, decisions with reasons, chosen approach, open questions, out of scope. Do not write implementation plans or code; that is planning and building mode.
+The output of this mode is one design doc in the project's `.handoff/designs/<feature>.md`. Add `.handoff/` to the project's `.gitignore` if it is missing. Planning mode starts from that file, so it must stand alone: problem, decisions with reasons, chosen approach, open questions, out of scope. Do not write implementation plans or code; that is planning and building mode.
