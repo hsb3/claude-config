@@ -107,3 +107,24 @@ Claude Code writes its own tab title at startup (OSC 0), so a title printed by a
 - Not tested: whether the title stays after the first reply, since that needs a real API turn. The schema text implies the name wins over topic titles while `terminalTitleFromRename` is `true`.
 - Gotcha: in an untrusted folder the trust dialog comes first and no title was written within 10 s.
 - Gotcha: claude ignores SIGTERM under a pty, so a test harness waiting on it hangs. Use SIGKILL.
+
+## `effortLevel` through `--settings` sets the request effort [2.1.319, TASK-003]
+
+**PASS.** A flag-level `effortLevel` reaches the API request as `output_config.effort`. The init event and `/effort` in `-p` don't show the effort, so the probe reads the request itself. A local Python server on 127.0.0.1 logs only the `model`, `thinking` and `output_config` fields of each `POST /v1/messages` and answers 400. Claude is pointed at it with `ANTHROPIC_BASE_URL`:
+
+```
+python3 -I cap.py out.txt &      # logs those fields, answers 400
+ANTHROPIC_BASE_URL=http://127.0.0.1:8765 claude -p --tools= --settings '{"effortLevel":"high"}' "Reply OK."
+```
+
+| Run (model opus, `~/.claude/settings.json` has no effort key) | `output_config.effort` |
+|---|---|
+| no override | `medium` (built-in default) |
+| `--settings '{"effortLevel":"low"}'` | `low` |
+| `--settings '{"effortLevel":"high"}'` | `high` |
+| `--effort low` | `low` |
+| `--settings ~/.claude/modes/building/settings.json` | `medium` |
+| `--settings ~/.claude/modes/design/settings.json` | `high` |
+
+- Requests also carry `thinking: {"type":"adaptive"}`. Effort is the only setting that changes between runs.
+- Gotcha: zsh doesn't word-split `$var`, so `claude $args` with `args="--settings x"` fails with "unknown option '--settings x'". Pass the flags as separate words.
