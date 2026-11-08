@@ -1,3 +1,10 @@
+## Repo conventions
+- Edit modes in `modes/` and the launcher in `bin/`, then run `./install.sh`. Never edit `~/.claude/modes/` directly; it holds copies.
+- Log every change to the live Claude Code config in `CUSTOMIZATIONS.md` (date, setting, value, why). Only the lead/coordinator session edits it.
+- Agents working in parallel each use their own git worktree; a single agent uses the main checkout.
+- Read a plugin's hooks and MCP config before installing it.
+- `backlog` may not be on PATH in scripts: `export PATH="$HOME/.bun/bin:$PATH"`.
+- Session state lives in `_meta/HANDOFF.md` (gitignored, run `/handoff`); read it at the start of a session.
 
 <!-- BACKLOG.MD GUIDELINES START -->
 <!-- backlog.md-instructions-version: 1.55.3 -->
