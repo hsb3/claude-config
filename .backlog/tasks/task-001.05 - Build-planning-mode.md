@@ -1,10 +1,11 @@
 ---
 id: TASK-001.05
 title: Build planning mode
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude-worker'
 created_date: '2026-11-08T19:32:00Z'
-updated_date: '2026-11-08T19:38:00Z'
+updated_date: '2026-11-08T19:44:00Z'
 labels: []
 dependencies:
   - TASK-001.04
@@ -27,8 +28,36 @@ Planning sessions turn an approved design into an implementation plan. They read
 - [ ] #3 The user has reviewed and approved prompt.md
 <!-- AC:END -->
 
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Write modes/planning/settings.json: effortLevel high; ponytail left out (stays on from user settings).
+2. Write modes/planning/prompt.md: plan-not-build mindset; workflow Read design → check code → steps → risks/verification → write; hand-off docs/plans/<feature>.md plus backlog tasks via CLI when backlog/ or .backlog/ exists; building mode reads it.
+3. Test with fresh claude -p stream-json from mktemp -d: prompt marker present, ponytail hook + skills present, i-have-adhd present.
+4. Comment test evidence; leave In Progress for user approval; commit.
+<!-- SECTION:PLAN:END -->
+
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
 Decision 2026-11-08: Build and test in this repo under modes/<mode>/ only; do not write to ~/.claude/ (installation is TASK-001.08). Do not edit CUSTOMIZATIONS.md: the coordinator owns it.
 <!-- SECTION:NOTES:END -->
+
+## Comments
+
+<!-- COMMENTS:BEGIN -->
+author: @claude-worker
+created: 2026-11-08T19:44:00Z
+
+---
+
+Test evidence (claude 2.1.319, fresh claude -p from mktemp -d, --append-system-prompt-file modes/planning/prompt.md --settings modes/planning/settings.json --output-format stream-json --verbose --tools=""):
+- Planning prompt present: model quoted the mindset sentence verbatim and the hand-off path docs/plans/<feature>.md.
+- Ponytail on: hook printed PONYTAIL MODE ACTIVE — level: full; init lists 6 ponytail skills.
+- i-have-adhd on: hook printed ADHD MODE ACTIVE.
+- Plugins in init: i-have-adhd, ponytail, egm (+ built-ins). egm stays loaded (not turned off; D6 does not require it off).
+- effortLevel high: set in settings.json; init does not report effort, so applied level not proven (same as design mode).
+- prompt.md is 19 lines. Awaiting user approval (AC #3).
+
+---
+<!-- COMMENTS:END -->
