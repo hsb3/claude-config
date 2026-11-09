@@ -12,16 +12,24 @@
     "DISABLE_TELEMETRY": "1",
     "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
   },
+  "feedbackDrafts": "off",
+  "promptSuggestionEnabled": false,
+  "awaySummaryEnabled": false,
+  "tui": "fullscreen",
+  "theme": "auto",
+  "switchModelsOnFlag": true,
+  "model": "opus",
+  "effortLevel": "medium",
+  "syncClaudeAiSkills": false,
+  "syncClaudeAiPlugins": false,
+  "disableClaudeAiConnectors": true,
   "attribution": {
     "commit": "",
     "pr": ""
   },
-  "syncClaudeAiSkills": false,
-  "syncClaudeAiPlugins": false,
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "bypassPermissions"
   },
-  "disableClaudeAiConnectors": true,
   "enabledPlugins": {
     "i-have-adhd@i-have-adhd": true,
     "ponytail@ponytail": true,
@@ -47,11 +55,6 @@
       }
     }
   },
-  "feedbackDrafts": "off",
-  "promptSuggestionEnabled": false,
-  "awaySummaryEnabled": false,
-  "tui": "fullscreen",
-  "theme": "auto",
-  "switchModelsOnFlag": true,
-  "model": "opus"
+"hooks": {},
+"pluginConfigs": {}
 }
