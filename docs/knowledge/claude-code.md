@@ -131,6 +131,8 @@ ANTHROPIC_BASE_URL=http://127.0.0.1:8765 claude -p --tools= --settings '{"effort
 
 ## Custom agents (subagents): what is configurable [docs, read 2026-11-09, not probed]
 
+Docs index for everything else: https://code.claude.com/docs/llms.txt (owner rule: read the docs before probing).
+
 Source of truth: https://code.claude.com/docs/en/sub-agents.md. Re-read it before building a per-mode agent; this is a digest, and unknown or misspelled fields are ignored silently (find them with `claude --debug`, search "does not recognize or apply").
 
 Frontmatter (`name` and `description` required; camelCase, exact spelling):

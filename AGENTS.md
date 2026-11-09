@@ -12,6 +12,7 @@ The product is a Claude Code setup reproducible from a fresh install: global set
 - **egm** (design-doc drafting and review) runs only in `cmode design`. Usage: `docs/knowledge/egm.md`.
 - **Worktrees**: agents working in parallel each use their own; a single agent uses the main checkout.
 - Read a plugin's hooks and MCP config before installing it.
+- **Claude Code docs** before deciding what Claude Code can do (flags, settings, agents, hooks, plugins): the index is https://code.claude.com/docs/llms.txt, each page also as `.md`. Read the page, then design; probe only what it leaves unclear, and record load-bearing facts in `docs/knowledge/claude-code.md` with date and version.
 
 ## Conventions
 
