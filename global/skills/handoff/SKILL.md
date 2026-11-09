@@ -1,98 +1,32 @@
 ---
 name: handoff
-description: Maintain the project's session-handoff file so a brand-new session can pick up work cold. Use at session boundaries when the user says "wrap up", "update the handoff", "prepare to clear/compact", "write the handoff", or runs /handoff; use "/handoff init" to create the file in a project that lacks one. Updates _meta/HANDOFF.md (or HANDOFF.md / .claude/HANDOFF.md) with current state, in-flight work, decisions made and pending, and gotchas - the externalization pass that makes a session clearable.
+description: Maintains the project's session-handoff file so a new session can pick up the work cold. Use at session boundaries, when the user says "wrap up", "update the handoff", "prepare to clear" or "compact", "write the handoff", or runs /handoff; "/handoff init" creates the file in a project that has none. Updates _meta/HANDOFF.md (or HANDOFF.md, .claude/HANDOFF.md) with current state, in-flight work, decisions made and pending, and gotchas.
 ---
 
-# Project Handoff
+# Project handoff
 
-Purpose: make every session **clearable** by externalizing all load-bearing state into one
-file a cold session can read in under ~10k tokens. The handoff is the bridge for NEW
-sessions (not resumes) - write for a reader with zero context.
-
-This skill is the **produce** edge of atelier's handoff loop; its enforcement partners are
-three co-homed hooks that read or gate on the SAME file it writes: `context-watermark` (nudges
-"run /handoff, then /clear or /compact" once context crosses the soft/hard watermark),
-`handoff-freshness-guard` (blocks a manual `/compact` when the handoff is missing or stale), and
-`session-handoff-surfacer` (surfaces the handoff to a fresh cold-start session). All three check
-the SAME candidate paths in the SAME order this skill writes to - keeping that list in sync is
-load-bearing, not cosmetic.
+The handoff puts every load-bearing fact of a session into one file a cold session can read in under 10k tokens. It is the bridge for new sessions, not resumes: write for a reader with zero context.
 
 ## File location
 
-**Precedence contract - must match the hooks exactly.** The candidate list below is the same
-one, in the same order, that atelier's `handoff-freshness-guard` and
-`session-handoff-surfacer` hooks check: `_meta/HANDOFF.md` → `HANDOFF.md` → `.claude/HANDOFF.md`.
-Do not reorder or add a path here without changing the hooks' `CANDIDATE_PATHS` in lockstep - a
-mismatch means the hooks act on a different file than this skill writes.
+Candidates, in order: `_meta/HANDOFF.md`, `HANDOFF.md`, `.claude/HANDOFF.md`. Update an existing handoff where it lives; never relocate it.
 
-**Per-project override.** A project whose handoff lives somewhere else entirely (not one of
-the candidates above) can say so with a `handoff:` key in `.claude/atelier.local.md`:
+Default for a new one: gitignored `_meta/HANDOFF.md`. Gitignored on purpose, so the file stays blunt (candid gotchas, undecided questions, operational state) without becoming an audience-facing document or churning PRs. Exception: commit a root `HANDOFF.md` when the project is worked from more than one checkout (cloud sessions, other machines, collaborators, agents on fresh clones), because a gitignored file is absent exactly at that cold start. If unsure, ask the user once at init.
 
-```markdown
----
-handoff: docs/HANDOFF.md
----
-```
+Worktrees do not contain gitignored folders. Subagents in worktrees read and write the handoff via the main checkout's absolute path.
 
-That path, when it resolves inside the project root, is authoritative for both hooks and for
-this skill - it wins over any standard candidate, and the standard search never runs as a
-fallback (a stated-but-not-yet-created override means "no handoff", not "check the
-candidates"). Leave the key absent, or unset, or pointing outside the project root, and
-nothing changes: the standard candidate search above still governs. When an override is
-active, write and update the handoff there instead of at a candidate path.
-
-**Default: a gitignored `_meta/` working desk.** On `/handoff init`, if the project has no
-handoff: create `_meta/` (`mkdir -p _meta`), ensure `_meta/` is in `.gitignore` (append it
-if missing), and write `_meta/HANDOFF.md`. Gitignored-by-default is deliberate: the handoff
-must stay BLUNT (candid gotchas, undecided questions, operational state) without becoming
-an audience-facing document, without PR churn, and without tripping repo lint/format CI.
-
-**Exception - commit a root `HANDOFF.md` instead** when the project is worked from more
-than one checkout: cloud sessions, multiple machines, collaborators, or fleets of agents
-operating on fresh clones. A gitignored file is machine-local and will be ABSENT exactly
-at the cold-start moment in those setups. If unsure, ask the user once at init.
-
-**Existing handoffs:** never relocate one; update it where it lives (`_meta/HANDOFF.md`,
-root `HANDOFF.md`, or `.claude/HANDOFF.md`).
-
-**Worktree gotcha:** gitignored dirs do not appear in git worktrees. Subagents working in
-worktrees must read/write the handoff via the MAIN checkout's absolute path.
-
-## Default invocation - the update pass
+## Update pass (default)
 
 1. Read the existing handoff in full.
-2. Diff it against THIS session's reality:
-   - what shipped / changed (with PR & issue refs, absolute dates)
-   - decisions made, each with its one-line WHY (decisions without whys rot)
-   - what is in flight (agents, open PRs, unfinished reconciliations)
-   - gotchas discovered the hard way (the things that will bite the next session)
-   - what sits in the owner's court (reviews, decisions, manual steps)
-3. Edit surgically - update sections in place, do not rewrite the file. Convert relative
-   dates ("today", "yesterday") to absolute (YYYY-MM-DD).
-4. Keep the file a TIGHT BRIDGE, not a diary (target ~150 lines; hard ceiling ~200). The
-   dominant failure mode is a growing chronological wave-log of dated session entries -
-   each session appends another multi-paragraph block and the bridge rots into a journal.
-   When that creeps in, distill in THIS order so nothing load-bearing is lost:
-   a. PROMOTE the durable gotchas/decisions buried in the dated entries up into the
-      conventions/gotchas section - they outlive the narrative that introduced them.
-   b. COLLAPSE the chronological narrative to a one-line-per-era pointer; the blow-by-blow
-      already lives in merged PRs + issues + ADRs + git history (where the prior full
-      version of the handoff also remains, so the prune is non-destructive).
-   c. DELETE superseded guidance outright.
-   Resist appending a fresh dated section every session - fold this session's deliverables
-   into a short "recent deliveries" list and let older ones age into the pointer.
-5. Update auto-memory too if a durable user-preference or feedback fact emerged this
-   session (one fact per file; pointer line in MEMORY.md).
-6. Finish by answering, in your reply: **"what do I still know that isn't written down?"**
-   If anything, write it first. Then state plainly whether the session is now clearable,
-   or what keeps it un-clearable (e.g., background agents still running).
+2. Diff it against this session: what shipped (PR and issue refs, absolute dates); decisions made, each with its one-line why; what is in flight; gotchas found the hard way; what sits in the owner's court.
+3. Edit sections in place; do not rewrite the file. Convert relative dates to YYYY-MM-DD.
+4. Keep it a bridge, not a diary: target 150 lines, ceiling 200. When dated session entries pile up, distill in this order: promote durable gotchas and decisions into the conventions section; collapse the narrative to one line per era (git history keeps the detail); delete superseded guidance. Fold this session into a short "recent deliveries" list instead of adding a dated section.
+5. Save any durable user preference or feedback that surfaced to auto-memory (one fact per file, pointer line in MEMORY.md).
+6. In the reply, answer "what do I still know that is not written down?" and write it first. Then say whether the session is clearable, or what keeps it open (for example background agents still running).
 
-## `/handoff init` - when no handoff exists
+## `/handoff init`
 
-Survey the repo first (README, CLAUDE.md, git log, issue board if available). Create the
-gitignored `_meta/` desk per "File location" above (or the committed root file if the
-multi-checkout exception applies), then write the handoff from this skeleton, filling
-every section with real content or deleting it:
+Survey the repo (README, CLAUDE.md or AGENTS.md, git log, issue board). Create `_meta/` and add `_meta/` to `.gitignore` if missing (or use the committed root file when the exception above applies), then write the handoff from this skeleton, filling each section or deleting it:
 
 ```markdown
 # HANDOFF - read this first when starting a session in <project>
@@ -110,18 +44,7 @@ _Cold-start onboarding. Last updated: YYYY-MM-DD. Keep updated at session bounda
 
 ## Rules
 
-- No secrets in the handoff, ever (it may be committed or shared).
-- If the handoff is COMMITTED/tracked (the standard tracks `_meta/` by default, ADR-0006, so
-  `_meta/HANDOFF.md` is in-tree), exempt its path from the repo's prose
-  formatter so handoff prose (em-dashes, long lines, no-table markdown) can't fail the format
-  CI and block merges - e.g. add it to `.prettierignore`. Gotcha: a tracked `_meta/HANDOFF.md`
-  is IN the formatter's scope, so it must be
-  listed in the formatter's OWN ignore file (which prettier reads after `.gitignore`, so it wins).
-- Target cost: ~1-2k tokens of writing per boundary. If an update takes much longer, the
-  file has rotted - distill it as part of the pass.
-- The handoff records ONLY what a fresh session cannot derive from the repo itself (state,
-  intent, decisions, gotchas). **CLAUDE.md / AGENTS.md is HOT-LOADED into every session**, so
-  any convention copied from it is pure wasted context that loads twice. Run a de-dup audit
-  each pass: a gotcha earns a place in the handoff only if CLAUDE.md doesn't already carry
-  it; replace anything duplicated (SDLC rules, wire conventions, doc map, worktree model)
-  with a one-line pointer ("see CLAUDE.md"). README too - link, don't restate.
+- No secrets, ever: the file may be committed or shared.
+- Record only what a fresh session cannot derive from the repo: state, intent, decisions, gotchas. CLAUDE.md and AGENTS.md load in every session, so replace anything copied from them with a pointer ("see AGENTS.md"). Link to the README instead of restating it.
+- A tracked handoff is exempted from the repo's prose formatter (for example in `.prettierignore`), so its prose cannot fail format CI.
+- An update should cost about 1 to 2k tokens of writing. If it takes much longer, the file has rotted: distill it as part of the pass.
