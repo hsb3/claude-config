@@ -6,3 +6,4 @@ _meta/
 # owner's notes
 NOTES.md
 .claude/settings.local.json
+.claude/memory/
