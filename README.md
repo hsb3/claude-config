@@ -32,5 +32,4 @@ Extra arguments pass through to `claude`, e.g. `cmode planning --resume`.
 | `bin/cmode`, `bin/cmode-test` | launcher and its self-check |
 | `MODES-DESIGN.md` | how the modes are designed, and why |
 | `CUSTOMIZATIONS.md` | every change made to my Claude Code config, with the reason |
-| `claude-code-knowledge.md` | tested findings about Claude Code behavior |
-| `DEFAULT-INSTRUCTIONS.md` | summary of Claude Code's default instructions, as a baseline |
+| `knowledge/` | research behind the design: tested Claude Code findings, Claude Code's default instructions, egm usage notes |

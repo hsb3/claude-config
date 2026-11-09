@@ -8,7 +8,7 @@ Start a Claude Code session in a **mode** (product design, implementation planni
 
 ## Facts the design depends on (Claude Code 2.1.319)
 
-Probe method and details for each: [claude-code-knowledge.md](claude-code-knowledge.md).
+Probe method and details for each: [knowledge/claude-code-knowledge.md](knowledge/claude-code-knowledge.md).
 
 - `--agent <x>` as the main thread drops the default Claude Code system prompt and the memory system.
 - `--append-system-prompt-file` adds to the default prompt and keeps it.
@@ -60,6 +60,6 @@ The launcher is [`bin/cmode`](bin/cmode): `cmode <mode> [claude args]` runs `cla
 
 ## Open items
 
-- **Version drift.** The facts above are pinned to 2.1.319. Re-run the probes in claude-code-knowledge.md after a Claude Code upgrade.
+- **Version drift.** The facts above are pinned to 2.1.319. Re-run the probes in knowledge/claude-code-knowledge.md after a Claude Code upgrade.
 - **Shared memory.** Notes saved in one mode load in every other mode, and the memory index is per project folder, not per mode.
 - **Effort.** Probe passed (TASK-003): `effortLevel` from `--settings` reaches the API request, so D7 works as built.
