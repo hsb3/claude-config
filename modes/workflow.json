@@ -1,0 +1,27 @@
+{
+  "about": "The hand-off graph between modes, a checked mirror of modes/*/prompt.md and settings.json (tests/workflow-test). Paths are what the prompts say, verbatim.",
+  "entry": "design",
+  "modes": {
+    "design": {
+      "reads": [],
+      "writes": [".handoff/designs/<feature>.md"],
+      "plugins": { "ponytail@ponytail": false, "egm@egm": true },
+      "effort": "high",
+      "next": ["planning"]
+    },
+    "planning": {
+      "reads": [".handoff/designs/<feature>.md"],
+      "writes": [".handoff/plans/<feature>.md"],
+      "plugins": {},
+      "effort": "high",
+      "next": ["building"]
+    },
+    "building": {
+      "reads": [".handoff/designs/<feature>.md", ".handoff/plans/<feature>.md"],
+      "writes": [],
+      "plugins": {},
+      "effort": null,
+      "next": []
+    }
+  }
+}

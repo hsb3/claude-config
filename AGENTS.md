@@ -7,7 +7,7 @@ The product is a Claude Code setup reproducible from a fresh install: global set
 ## Tooling, and when
 
 - **Backlog.md** for work that needs planning, decisions or hand-off notes. Load the `backlog-extras:backlog-md` skill first and use only the `backlog` CLI (in Claude sessions it is the backlog-extras wrapper, pinned in `~/.local/share/backlog-extras/upstream`; outside Claude use `bl`). Questions, exploration and mechanical edits need no task.
-- **Self-checks** `tests/cmode-test` and `tests/install-test` before committing a change to `bin/`, `install.sh` or `global/`. Then `./install.sh` after any product edit (settings.json: merge by hand from its diff). Never edit the copies in `~/.claude/` directly.
+- **Self-checks** `tests/cmode-test` and `tests/install-test` before committing a change to `bin/`, `install.sh` or `global/`. `tests/workflow-test` (needs jq) before committing a change to `modes/`. Then `./install.sh` after any product edit (settings.json: merge by hand from its diff). Never edit the copies in `~/.claude/` directly.
 - **`/handoff`** at session boundaries. Session state lives in gitignored `_meta/HANDOFF.md`; read it when a session starts.
 - **egm** (design-doc drafting and review) runs only in `cmode design`. Usage: `docs/knowledge/egm.md`.
 - **Worktrees**: agents working in parallel each use their own; a single agent uses the main checkout.

@@ -1,0 +1,50 @@
+#!/bin/sh
+# Self-check for modes/workflow.json: every mode's plugins, effort and hand-off paths must match its settings.json and prompt.md,
+# and every hand-off file needs a writer and a reader. Walks the graph from the entry mode. Needs jq (dev check, not shipped).
+repo="$(cd "$(dirname "$0")/.." && pwd)"
+command -v jq >/dev/null 2>&1 || { echo "workflow-test: needs jq" >&2; exit 1; }
+t="$(mktemp -d)"; trap 'rm -rf "$t"' EXIT
+fail=0
+check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
+
+# verify <modes dir>: print one line per gap, then the walk; exit non-zero on any gap
+verify() {
+  dir="$1"; g="$dir/workflow.json"; bad=0
+  for d in "$dir"/*/; do m=$(basename "$d")
+    jq -e --arg m "$m" '.modes[$m]' "$g" >/dev/null || { echo "  $m: folder has no entry in workflow.json"; bad=1; }
+  done
+  for m in $(jq -r '.modes | keys[]' "$g"); do
+    s="$dir/$m/settings.json"; p="$dir/$m/prompt.md"
+    [ -f "$s" ] && [ -f "$p" ] || { echo "  $m: in workflow.json but no $dir/$m/"; bad=1; continue; }
+    jq -e --slurpfile s "$s" --arg m "$m" '.modes[$m] | .plugins == ($s[0].enabledPlugins // {}) and .effort == $s[0].effortLevel' "$g" >/dev/null \
+      || { echo "  $m: plugins or effort differ from settings.json"; bad=1; }
+    for f in $(jq -r --arg m "$m" '.modes[$m] | .reads[], .writes[]' "$g"); do
+      grep -qF "$f" "$p" || { echo "  $m: $f not in prompt.md"; bad=1; }
+    done
+    for n in $(jq -r --arg m "$m" '.modes[$m].next[]' "$g"); do
+      jq -e --arg n "$n" '.modes[$n]' "$g" >/dev/null || { echo "  $m: hands to unknown mode $n"; bad=1; }
+    done
+  done
+  for f in $(jq -r '[.modes[].writes[]] - [.modes[].reads[]] | .[]' "$g"); do echo "  $f: written, never read"; bad=1; done
+  for f in $(jq -r '[.modes[].reads[]] - [.modes[].writes[]] | .[]' "$g"); do echo "  $f: read, never written"; bad=1; done
+  # the walk: each mode once, so a cycle ends the walk instead of looping
+  seen=" "; queue=$(jq -r .entry "$g")
+  while [ -n "$queue" ]; do
+    m=${queue%% *}; queue=${queue#"$m"}; queue=${queue# }
+    case "$seen" in *" $m "*) continue ;; esac; seen="$seen$m "
+    jq -r --arg m "$m" '.modes[$m] // empty | "  \($m): consumes \(.reads | join(", ") | if . == "" then "nothing" else . end); produces \(.writes | join(", ") | if . == "" then "nothing" else . end)"' "$g"
+    queue="$queue $(jq -r --arg m "$m" '.modes[$m].next // [] | join(" ")' "$g")"; queue=${queue# }; queue=${queue% }
+  done
+  return $bad
+}
+# broken <name> <shell snippet run inside a copy of modes/>: the check must fail on the copy
+broken() { rm -rf "$t/modes"; cp -R "$repo/modes" "$t/modes"; (cd "$t/modes" && eval "$2"); check "$1 fails" '! verify "$t/modes" >/dev/null'; }
+
+echo "walk from $(jq -r .entry "$repo/modes/workflow.json"):"
+verify "$repo/modes"; code=$?
+check "current modes consistent" '[ $code -eq 0 ]'
+broken "plans path renamed in a prompt"  'sed "s|.handoff/plans/|.handoff/plan/|" building/prompt.md > p && mv p building/prompt.md'
+broken "effort changed in settings.json" 'echo "{\"effortLevel\":\"low\"}" > planning/settings.json'
+broken "output with no reader"           'jq ".modes.building.reads -= [\".handoff/plans/<feature>.md\"]" workflow.json > w && mv w workflow.json'
+broken "hand-off to unknown mode"        'jq ".modes.building.next = [\"review\"]" workflow.json > w && mv w workflow.json'
+exit $fail

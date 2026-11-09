@@ -42,8 +42,9 @@ The product is what `install.sh` copies. Everything else documents or tests it.
 | `install.sh` | installer, safe to re-run |
 | `global/` | files copied into `~/.claude/`: `settings.json`, `CLAUDE.md`, `AGENTS.md`, `.i-have-adhd-always`, `skills/handoff/` |
 | `modes/<mode>/` | `prompt.md` (appended to Claude Code's default prompt) and `settings.json` (per-mode overrides) |
+| `modes/workflow.json` | the hand-off graph: each mode's inputs, outputs, plugins, effort and the modes it hands to; a checked mirror of the prompts, not shipped |
 | `bin/cmode` | the mode launcher |
-| `tests/` | self-checks: `cmode-test`, `install-test` |
+| `tests/` | self-checks: `cmode-test`, `install-test`, `workflow-test` (walks the graph, needs jq) |
 | `docs/modes-design.md` | how the modes are designed, and why |
 | `docs/customizations.md` | current state of my Claude Code config, with the reason for each piece |
 | `docs/pre-mortem.md` | how this product could fail, and the guard for each |
