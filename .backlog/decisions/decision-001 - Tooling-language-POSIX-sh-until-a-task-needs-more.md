@@ -2,7 +2,7 @@
 id: decision-001
 title: 'Tooling language: POSIX sh until a task needs more'
 date: '2026-11-09T00:20:00Z'
-status: proposed
+status: accepted
 ---
 ## Context
 NOTES.md asks: if we need more than shell, which language: ts, py, rs or go? Today the product is install.sh, bin/cmode and two sh self-checks, all small.
