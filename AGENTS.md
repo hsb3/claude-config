@@ -1,5 +1,5 @@
 ## Repo conventions
-- Edit modes in `modes/` and the launcher in `bin/`, then run `./install.sh`. Never edit `~/.claude/modes/` directly; it holds copies.
+- Edit modes in `modes/`, the launcher in `bin/` and global `CLAUDE.md` / `AGENTS.md` / `settings.json` in `global/`, then run `./install.sh` (settings: merge by hand from its diff). Never edit the copies in `~/.claude/` directly.
 - Log every change to the live Claude Code config in `CUSTOMIZATIONS.md` (date, setting, value, why). Only the lead/coordinator session edits it.
 - Agents working in parallel each use their own git worktree; a single agent uses the main checkout.
 - Read a plugin's hooks and MCP config before installing it.

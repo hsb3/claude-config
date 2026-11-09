@@ -1,8 +1,9 @@
 #!/bin/sh
-# install.sh: install the working modes and the cmode launcher from this repo. Safe to re-run.
+# install.sh: install the global config, the working modes and the cmode launcher from this repo. Safe to re-run.
 set -eu
 repo=$(cd "$(dirname "$0")" && pwd)
-modes_dst="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/modes"
+cfg="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+modes_dst="$cfg/modes"
 bin_dst="$HOME/.local/bin"
 
 "$repo/bin/cmode-test" >/dev/null || { echo "install: bin/cmode-test failed, nothing installed" >&2; exit 1; }
@@ -17,6 +18,20 @@ put() { # put <src> <dst>: copy and report added / changed / unchanged
 for f in "$repo"/modes/*/*; do put "$f" "$modes_dst/${f#"$repo"/modes/}"; done
 put "$repo/bin/cmode" "$bin_dst/cmode"
 chmod +x "$bin_dst/cmode"
+
+# global config: instruction files are overwritten (a differing old file is kept as .bak)
+for f in CLAUDE.md AGENTS.md .i-have-adhd-always; do
+  [ -e "$cfg/$f" ] && ! cmp -s "$repo/global/$f" "$cfg/$f" && cp "$cfg/$f" "$cfg/$f.bak"
+  put "$repo/global/$f" "$cfg/$f"
+done
+# shortcut: settings.json is never merged, only copied when absent; add a merge step if hand-merging gets tedious
+st="$cfg/settings.json"
+if [ ! -e "$st" ]; then put "$repo/global/settings.json" "$st"
+elif cmp -s "$repo/global/settings.json" "$st"; then echo "unchanged  $st"
+else
+  echo "differs  $st: not overwritten, merge by hand (- yours, + repo):"
+  diff -u "$st" "$repo/global/settings.json" || true
+fi
 
 case ":$PATH:" in *":$bin_dst:"*) ;; *) echo "warning: $bin_dst is not on PATH, add it to run cmode" >&2 ;; esac
 if command -v claude >/dev/null 2>&1; then
