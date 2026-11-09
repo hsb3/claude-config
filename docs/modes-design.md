@@ -52,7 +52,7 @@ The launcher is [`bin/cmode`](bin/cmode): `cmode <mode> [claude args]` runs `cla
 | D4 | Mode files: `${CLAUDE_CONFIG_DIR:-~/.claude}/modes/<mode>/` → `prompt.md` (about 20 lines), `settings.json`, optional `mcp.json`. |
 | D5 | Each mode defines: mindset (2–3 sentences), workflow steps, plugins on/off, MCPs, model and effort. |
 | D6 | Plugins: ponytail **off** in design, on in planning and building. i-have-adhd on everywhere. egm **off** in the base and **on** only in design (owner, 2026-11-08), so plain `claude` has no `/egm` commands. |
-| D7 | Effort: `effortLevel: high` in design and planning; building sets none, so it gets Claude Code's built-in default (`medium` on 2.1.319). |
+| D7 | Effort: `effortLevel: high` in design and planning; building sets none, so it gets the global `settings.json` value (`effortLevel: medium`, shipped since 2026-11-09; before that Claude Code's built-in default, `medium` on 2.1.319). |
 | D8 | Plain `claude` = today's setup. Modes are opt-in. |
 | D9 | One mode per session. No mid-session switching, and resuming a session from another mode is not supported. |
 | D10 | Hand-off: design writes `.handoff/designs/<feature>.md`, planning writes `.handoff/plans/<feature>.md`, building reads both. `.handoff/` is gitignored in the project; the prompts add it if missing (owner, 2026-11-08: no working files in a project's `docs/`). egm-draft defaults to `docs/designs/` but takes a target dir; egm-brainstorm's "Publish as RFC" option hard-codes `docs/designs/`, so the design prompt steers around it. |
