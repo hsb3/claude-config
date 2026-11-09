@@ -128,3 +128,33 @@ ANTHROPIC_BASE_URL=http://127.0.0.1:8765 claude -p --tools= --settings '{"effort
 
 - Requests also carry `thinking: {"type":"adaptive"}`. Effort is the only setting that changes between runs.
 - Gotcha: zsh doesn't word-split `$var`, so `claude $args` with `args="--settings x"` fails with "unknown option '--settings x'". Pass the flags as separate words.
+
+## Custom agents (subagents): what is configurable [docs, read 2026-11-09, not probed]
+
+Source of truth: https://code.claude.com/docs/en/sub-agents.md. Re-read it before building a per-mode agent; this is a digest, and unknown or misspelled fields are ignored silently (find them with `claude --debug`, search "does not recognize or apply").
+
+Frontmatter (`name` and `description` required; camelCase, exact spelling):
+
+| Field | Values | Note |
+|---|---|---|
+| `name` | up to 256 chars, no `:`, no leading `-` | hooks receive it as `agent_type`; filename is irrelevant |
+| `description` | text | drives automatic delegation; combined descriptions over 15k tokens warn at startup |
+| `tools` / `disallowedTools` | comma list or YAML list | denylist first; `mcp__<server>__*` for one MCP server; `Bash(git push *)` in `disallowedTools` removes all of Bash (use `permissions.deny` instead) |
+| `model` | `sonnet`, `opus`, `haiku`, `fable`, full ID, `inherit` | order: Agent-call param, this field, `CLAUDE_CODE_SUBAGENT_MODEL`, main model |
+| `effort` | `low`..`max` | per-call param overrides; `CLAUDE_CODE_EFFORT_LEVEL` overrides both |
+| `permissionMode` | `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, `plan` | ignored when the main session is in bypass, acceptEdits or auto; ignored for plugin agents |
+| `maxTurns`, `autoCompactWindow` | int; 100000..1000000 (2.1.296+) | partial output returned at the turn limit |
+| `skills` | list of skill names | full content preloaded, first 32; `disable-model-invocation` skills can't be preloaded |
+| `mcpServers` | server name or inline `{name: config}` | inline ones connect for the agent's lifetime; ignored for plugin agents |
+| `hooks` | lifecycle hooks | run only while the agent is active; `Stop` becomes `SubagentStop`; ignored for plugin agents; project-agent hooks need the folder trusted |
+| `memory` | `user`, `project`, `local` | `MEMORY.md` first 200 lines / 25KB into the prompt; off when auto memory is off |
+| `background`, `isolation` | `true`; `worktree` | worktree branches from the default branch, not HEAD |
+| `omitClaudeMd` | `true` (2.1.271+) | skip CLAUDE.md; ignored when run as the main agent via `--agent` |
+| `initialPrompt` | text | auto-submitted first turn when run via `--agent`; ignored for plugin agents |
+| `color`, `experimental.cacheTtl` | 8 colors; `5m`/`1h` | both ignored in `--agents` JSON |
+
+Locations, highest priority first: managed settings `.claude/agents/`, `--agents` (session only), project `.claude/agents/` (walks up to the repo root; nearest wins), `~/.claude/agents/`, plugin `agents/` (registered as `<plugin>:<path>`). Same `name` in one tree: one loads by read order; `/doctor` reports it. Hot reload within seconds, except the first file in a new `agents/` dir.
+
+Not inherited: the Claude Code system prompt (the body is the whole prompt; confirms the `--agent` finding above), conversation history (forks excepted), output style, auto memory. Explore and Plan also skip CLAUDE.md and the git snapshot. Background subagents get a reduced built-in tool set (Read, Grep, Glob, Bash, Edit, Write, WebFetch, WebSearch, Skill, ToolSearch, worktree and messaging tools) plus all MCP tools.
+
+Gotchas: a file without `name` is treated as documentation; `name` without `description`, bad YAML, or frontmatter not on line 1 is skipped with only a debug-log entry. Validate with `claude plugin validate <dir>` (2.1.233+). Plugin agents lose `hooks`, `mcpServers` and `permissionMode`: copy the file into `.claude/agents/` when those are needed.
