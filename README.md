@@ -46,5 +46,6 @@ The product is what `install.sh` copies. Everything else documents or tests it.
 | `tests/` | self-checks: `cmode-test`, `install-test` |
 | `docs/modes-design.md` | how the modes are designed, and why |
 | `docs/customizations.md` | current state of my Claude Code config, with the reason for each piece |
+| `docs/pre-mortem.md` | how this product could fail, and the guard for each |
 | `docs/knowledge/` | research behind the design: tested Claude Code findings, Claude Code's default instructions, egm usage notes |
 | `AGENTS.md` | conventions for agents working in this repo |

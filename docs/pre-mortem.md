@@ -1,0 +1,14 @@
+# Pre-mortem: how this product fails, and the guard for each
+
+Anti-patterns to avoid while building out the modes and the config. Written 2026-11-09 against the v1 product; revisit when a mode or plugin is added.
+
+| # | Anti-pattern | How it would show up here | Guard |
+|---|---|---|---|
+| 1 | **Repo and live config drift** | A setting changed in `~/.claude/` and never copied back, or the reverse. Already seen: live `model: fable` vs shipped `opus`. | Every key is either shipped (`global/`) or listed as local-only in `docs/customizations.md`. `./install.sh` prints the diff; a `-` line that is not in the local-only table is drift to fix. |
+| 2 | **Prompt sprawl** | Mode prompts grow past a screen, restating the default prompt, the plugins or AGENTS.md. Claude reads it all every session. | D4: about 20 lines per prompt. Each line answers "what does this mode do differently?" If it is true in every mode, it belongs in `global/AGENTS.md` or nowhere. |
+| 3 | **Hand-off contract lives in prose** | Design writes a file, planning expects another name or section, building finds neither. Today the contract is three prompts agreeing by hand. | One machine-readable model of modes, inputs and outputs, checked against the prompts (see Backlog task on the workflow graph). |
+| 4 | **Facts pinned to one Claude Code version** | `--settings` stops overriding plugins, or `effortLevel` moves, after an upgrade; modes silently run as plain `claude`. | Every fact in `docs/knowledge/claude-code.md` carries its version. After an upgrade, re-run the probes before trusting a mode. |
+| 5 | **Steering around a plugin's internals** | The design prompt dodges egm's hard-coded `docs/designs/`. The dodge breaks or becomes needless on the next egm release. | Keep plugin-specific steering in one named section per prompt, with the plugin version in `docs/knowledge/<plugin>.md`. Re-check on upgrade; delete when upstream fixes it. |
+| 6 | **Mode proliferation** | A "review" or "debug" mode that is a mindset with no hand-off, so sessions switch modes mid-task. | D1 and D9: a mode needs a distinct mindset and a hand-off file. Anything less is a skill or a line in AGENTS.md. |
+| 7 | **Docs ahead of the system** | A design doc describing an unbuilt draft, or stale reports kept "for reference". The egm review found exactly this in the first MODES-DESIGN.md. | Every doc opens with its status and date. Working files live in gitignored `_meta/` and are deleted when their findings are closed. |
+| 8 | **Tooling bigger than the thing it checks** | A workflow simulator for a three-node graph, a JSON schema for three settings files. | Decision-001: POSIX sh until a task needs more. Build the check, not the framework; add a simulator only when the graph has a cycle. |
