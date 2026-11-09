@@ -1,0 +1,3 @@
+- [Consult Claude Code docs first](consult-claude-code-docs-first.md) — before deciding what Claude Code can do, read the docs; index https://code.claude.com/docs/llms.txt; key pages: claude-directory, sub-agents, memory, settings-reference
+- [Agent instructions follow Anthropic skill best practices](agent-instructions-follow-skill-best-practices.md) — check AGENTS.md / prompts / SKILL.md edits against the best-practices doc
+- [Write memories impersonally](write-memories-impersonally.md) — memory is committed to the public repo: rule plus why, no names or personal details

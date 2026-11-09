@@ -164,3 +164,26 @@ Gotchas: a file without `name` is treated as documentation; `name` without `desc
 ## Auto memory location: `autoMemoryDirectory` [docs, applied 2026-11-09]
 
 Setting in any scope; value must be an absolute or `~/`-prefixed path (no relative paths, no variable expansion documented). Default `~/.claude/projects/<project>/memory/`, where `<project>` comes from the git repo, so worktrees share it. From project or local settings it is honored under the same trust rule as hooks. `autoMemoryEnabled: false` or `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` turns memory off. `MEMORY.md` loads only its first 200 lines or 25KB. Ours: `.claude/settings.local.json` points at `~/Developer/claude-config/.claude/memory` (verified: a `-p` session names that path). Source: https://code.claude.com/docs/en/memory.md, settings-reference.md.
+
+## What can live in `~/.claude` and a project's `.claude/` [docs, read 2026-11-09]
+
+Source: https://code.claude.com/docs/en/claude-directory.md. Project-scope files sit under the repo's `.claude/` (root for `CLAUDE.md`, `.mcp.json`, `.worktreeinclude`); global ones under `~/.claude/` (or `CLAUDE_CONFIG_DIR`, which also moves `.claude.json`). The page states no project-over-global precedence rule for these files; settings precedence is on the settings page.
+
+| Path | Scope | Committed | What |
+|---|---|---|---|
+| `CLAUDE.md` | both | yes | instructions loaded every session |
+| `rules/*.md` | both | yes | topic-scoped instructions, optionally path-gated |
+| `settings.json` | both | yes | permissions, hooks, env, model defaults |
+| `settings.local.json` | project | no | personal overrides; gitignored when Claude Code writes to it |
+| `.mcp.json`, `.worktreeinclude` | project | yes | team MCP servers; gitignored files to copy into new worktrees |
+| `skills/<name>/SKILL.md`, `commands/*.md` | both | yes | prompts invoked with `/name`; same mechanism |
+| `output-styles/*.md` | both | yes | instruction sets that adjust how Claude works |
+| `agents/*.md` | both | yes | subagent definitions (see the subagents section) |
+| `workflows/*.js` | both | yes | workflow scripts saved from `/workflows`, each a `/<name>` command |
+| `agent-memory/<name>/` | both | yes | persistent memory for subagents |
+| `projects/<project>/memory/` | global | no | auto memory (relocated here with `autoMemoryDirectory`, see above) |
+| `~/.claude.json`, `keybindings.json`, `themes/*.json` | global | no | app state and account, key bindings, color themes |
+
+Outside `.claude/`: `managed-settings.json` (organization), `CLAUDE.local.md` at the project root (private preferences, create by hand and gitignore), `AGENTS.md`, plugins under `~/.claude/plugins`. Transcripts under `projects/<project>/<session>.jsonl` are not encrypted; a credential printed by a command lands there.
+
+Not yet used by this repo: `rules/` (path-gated instructions, the deferred probe), `output-styles/`, `agent-memory/`, `.worktreeinclude` (would carry gitignored `_meta/` and `.handoff/` into worktrees).
