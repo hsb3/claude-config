@@ -17,7 +17,7 @@ Probe method and details for each: [knowledge/claude-code.md](knowledge/claude-c
 
 ## Approach
 
-Rejected: running the mode as the main-thread agent (`--agent`), because it drops the default prompt and memory.
+Rejected: running the mode as the main-thread agent (`--agent`), because it drops the default prompt and memory. Also rejected (decision-003, 2026-11-09): output styles as the carrier; they adjust how Claude writes, not what a running session is (plugins, effort, MCP). A mode may use one inside itself. Backlog decisions 001-003 hold the choices made after D1–D11 below.
 
 **A mode = 1 folder + 1 launcher**
 
