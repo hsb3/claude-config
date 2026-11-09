@@ -2,3 +2,6 @@ logs/
 .backlog/.locks/
 .DS_Store
 _meta/
+
+# owner's notes
+NOTES.md

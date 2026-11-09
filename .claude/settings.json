@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "backlog-md-extras": {
+      "source": {
+        "source": "github",
+        "repo": "hsb3/backlog.md-extras"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "backlog-extras@backlog-md-extras": true
+  }
+}
