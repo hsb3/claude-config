@@ -1,6 +1,6 @@
 #!/bin/sh
 # Self-check for cmode. Uses a fake modes root and a stub `claude`, so no real session starts.
-here="$(cd "$(dirname "$0")" && pwd)"
+cmode="$(cd "$(dirname "$0")/.." && pwd)/bin/cmode"
 t="$(mktemp -d)"; trap 'rm -rf "$t"' EXIT
 mkdir -p "$t/stub" "$t/cfg/modes/design" "$t/cfg/modes/web"
 printf '#!/bin/sh\nfor a; do echo "$a"; done > "%s/args"\n' "$t" > "$t/stub/claude"; chmod +x "$t/stub/claude"
@@ -9,7 +9,7 @@ touch "$t/cfg/modes/web/mcp.json"
 export CLAUDE_CONFIG_DIR="$t/cfg" PATH="$t/stub:$PATH"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-run() { rm -f "$t/args"; "$here/cmode" "$@" >"$t/out" 2>&1; code=$?; }
+run() { rm -f "$t/args"; "$cmode" "$@" >"$t/out" 2>&1; code=$?; }
 
 run;            check "missing arg exits non-zero"  '[ $code -ne 0 ] && [ ! -f "$t/args" ]'
                 check "missing arg lists modes"     'grep -q "^  design$" "$t/out" && grep -q "^  web$" "$t/out"'

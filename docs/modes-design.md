@@ -8,7 +8,7 @@ Start a Claude Code session in a **mode** (product design, implementation planni
 
 ## Facts the design depends on (Claude Code 2.1.319)
 
-Probe method and details for each: [knowledge/claude-code-knowledge.md](knowledge/claude-code-knowledge.md).
+Probe method and details for each: [knowledge/claude-code.md](knowledge/claude-code.md).
 
 - `--agent <x>` as the main thread drops the default Claude Code system prompt and the memory system.
 - `--append-system-prompt-file` adds to the default prompt and keeps it.
@@ -55,11 +55,11 @@ The launcher is [`bin/cmode`](bin/cmode): `cmode <mode> [claude args]` runs `cla
 | D7 | Effort: `effortLevel: high` in design and planning; building sets none, so it gets Claude Code's built-in default (`medium` on 2.1.319). |
 | D8 | Plain `claude` = today's setup. Modes are opt-in. |
 | D9 | One mode per session. No mid-session switching, and resuming a session from another mode is not supported. |
-| D10 | Hand-off: design writes `.handoff/designs/<feature>.md`, planning writes `.handoff/plans/<feature>.md`, building reads both. `.handoff/` is gitignored in the project; the prompts add it if missing (owner, 2026-11-08: no working files in `docs/`). egm-draft defaults to `docs/designs/` but takes a target dir; egm-brainstorm's "Publish as RFC" option hard-codes `docs/designs/`, so the design prompt steers around it. |
+| D10 | Hand-off: design writes `.handoff/designs/<feature>.md`, planning writes `.handoff/plans/<feature>.md`, building reads both. `.handoff/` is gitignored in the project; the prompts add it if missing (owner, 2026-11-08: no working files in a project's `docs/`). egm-draft defaults to `docs/designs/` but takes a target dir; egm-brainstorm's "Publish as RFC" option hard-codes `docs/designs/`, so the design prompt steers around it. |
 | D11 | Active mode shown in the terminal tab title, via `--name`. |
 
 ## Open items
 
-- **Version drift.** The facts above are pinned to 2.1.319. Re-run the probes in knowledge/claude-code-knowledge.md after a Claude Code upgrade.
+- **Version drift.** The facts above are pinned to 2.1.319. Re-run the probes in [knowledge/claude-code.md](knowledge/claude-code.md) after a Claude Code upgrade.
 - **Shared memory.** Notes saved in one mode load in every other mode, and the memory index is per project folder, not per mode.
 - **Effort.** Probe passed (TASK-003): `effortLevel` from `--settings` reaches the API request, so D7 works as built.

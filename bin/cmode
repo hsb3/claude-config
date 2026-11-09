@@ -1,5 +1,5 @@
 #!/bin/sh
-# cmode <mode> [claude args...]: start claude in a working mode (see MODES-DESIGN.md).
+# cmode <mode> [claude args...]: start claude in a working mode (see docs/modes-design.md).
 root="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/modes"
 mode="$1"
 case "$mode" in */*|.*) bad=1 ;; esac

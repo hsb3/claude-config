@@ -2,7 +2,7 @@ project_name: "claude-config"
 default_status: "To Do"
 statuses: ["To Do", "In Progress", "Done"]
 labels: ["modes", "docs", "install", "config"]
-definition_of_done: ["Acceptance criteria verified with evidence: a test, probe or command output", "./install.sh re-run when modes/, bin/ or global/ changed", "Live config changes logged in CUSTOMIZATIONS.md"]
+definition_of_done: ["Acceptance criteria verified with evidence: a test, probe or command output", "./install.sh re-run when modes/, bin/ or global/ changed", "Live config changes recorded in docs/customizations.md"]
 date_format: yyyy-mm-dd
 max_column_width: 20
 default_editor: "hx"

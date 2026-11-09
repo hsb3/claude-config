@@ -11,7 +11,7 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 run() { "$repo/install.sh" >"$t/out" 2>&1; code=$?; }
 
 run;  check "fresh install succeeds"           '[ $code -eq 0 ]'
-      check "fresh install copies globals"     'for f in CLAUDE.md AGENTS.md .i-have-adhd-always settings.json; do cmp -s "$repo/global/$f" "$cfg/$f" || exit 1; done'
+      check "fresh install copies globals"     'for f in CLAUDE.md AGENTS.md .i-have-adhd-always settings.json skills/handoff/SKILL.md; do cmp -s "$repo/global/$f" "$cfg/$f" || exit 1; done'
       check "fresh install copies modes, cmode" '[ -f "$cfg/modes/design/prompt.md" ] && [ -x "$HOME/.local/bin/cmode" ]'
 run;  check "re-run reports nothing changed"   '[ $code -eq 0 ] && ! grep -qE "^(added|changed|differs)" "$t/out"'
       check "re-run leaves no .bak"            '! ls "$cfg"/*.bak >/dev/null 2>&1'

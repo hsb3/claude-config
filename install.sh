@@ -6,7 +6,7 @@ cfg="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 modes_dst="$cfg/modes"
 bin_dst="$HOME/.local/bin"
 
-"$repo/bin/cmode-test" >/dev/null || { echo "install: bin/cmode-test failed, nothing installed" >&2; exit 1; }
+"$repo/tests/cmode-test" >/dev/null || { echo "install: tests/cmode-test failed, nothing installed" >&2; exit 1; }
 
 put() { # put <src> <dst>: copy and report added / changed / unchanged
   if [ ! -e "$2" ]; then s=added; elif cmp -s "$1" "$2"; then s=unchanged; else s=changed; fi
@@ -19,10 +19,11 @@ for f in "$repo"/modes/*/*; do put "$f" "$modes_dst/${f#"$repo"/modes/}"; done
 put "$repo/bin/cmode" "$bin_dst/cmode"
 chmod +x "$bin_dst/cmode"
 
-# global config: instruction files are overwritten (a differing old file is kept as .bak)
-for f in CLAUDE.md AGENTS.md .i-have-adhd-always; do
-  [ -e "$cfg/$f" ] && ! cmp -s "$repo/global/$f" "$cfg/$f" && cp "$cfg/$f" "$cfg/$f.bak"
-  put "$repo/global/$f" "$cfg/$f"
+# global config: every file under global/ except settings.json is overwritten (a differing old file is kept as .bak)
+find "$repo/global" -type f ! -name settings.json | sort | while read -r f; do
+  rel=${f#"$repo"/global/}
+  [ -e "$cfg/$rel" ] && ! cmp -s "$f" "$cfg/$rel" && cp "$cfg/$rel" "$cfg/$rel.bak"
+  put "$f" "$cfg/$rel"
 done
 # shortcut: settings.json is never merged, only copied when absent; add a merge step if hand-merging gets tedious
 st="$cfg/settings.json"

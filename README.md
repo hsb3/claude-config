@@ -10,16 +10,16 @@ cd claude-config
 ./install.sh
 ```
 
-The installer runs `bin/cmode-test`, then copies into `~/.claude/` (or `$CLAUDE_CONFIG_DIR`). Re-run it after pulling changes. It reports each file as added, changed or unchanged.
+The installer runs `tests/cmode-test`, then copies into `~/.claude/` (or `$CLAUDE_CONFIG_DIR`). Re-run it after pulling changes. It reports each file as added, changed or unchanged.
 
 | From | To | How |
 |---|---|---|
 | `modes/*` | `~/.claude/modes/` | overwritten |
 | `bin/cmode` | `~/.local/bin/cmode` | overwritten |
-| `global/CLAUDE.md`, `global/AGENTS.md`, `global/.i-have-adhd-always` | `~/.claude/` | overwritten; a different old file is kept as `<name>.bak` |
+| `global/*` except `settings.json` (`CLAUDE.md`, `AGENTS.md`, `.i-have-adhd-always`, `skills/handoff/`) | `~/.claude/` | overwritten; a different old file is kept as `<name>.bak` |
 | `global/settings.json` | `~/.claude/settings.json` | copied only if you have none |
 
-If you already have a `settings.json` that differs, the installer leaves it alone and prints the diff (`-` yours, `+` repo). Copy over the lines you want by hand. Machine-specific entries such as the herdr hook are not in the repo, so they always show as `-` lines; keep them. Self-check for the installer: `bin/install-test`.
+If you already have a `settings.json` that differs, the installer leaves it alone and prints the diff (`-` yours, `+` repo). Copy over the lines you want by hand. Machine-specific entries such as the herdr hook are not in the repo, so they always show as `-` lines; keep them. Self-check for the installer: `tests/install-test`.
 
 Needs Claude Code. The modes expect these plugins and warn if any is missing: [ponytail](https://github.com/dietrichgebert/ponytail), [i-have-adhd](https://github.com/ayghri/i-have-adhd), [egm](https://github.com/google/elephant-goldfish-model) (on only in design mode). Hand-off files go in the project's gitignored `.handoff/` folder.
 
@@ -35,11 +35,16 @@ Extra arguments pass through to `claude`, e.g. `cmode planning --resume`.
 
 ## What's here
 
+The product is what `install.sh` copies. Everything else documents or tests it.
+
 | Path | What |
 |---|---|
+| `install.sh` | installer, safe to re-run |
+| `global/` | files copied into `~/.claude/`: `settings.json`, `CLAUDE.md`, `AGENTS.md`, `.i-have-adhd-always`, `skills/handoff/` |
 | `modes/<mode>/` | `prompt.md` (appended to Claude Code's default prompt) and `settings.json` (per-mode overrides) |
-| `global/` | global `settings.json`, `CLAUDE.md`, `AGENTS.md` |
-| `bin/cmode`, `bin/cmode-test`, `bin/install-test` | launcher and self-checks |
-| `MODES-DESIGN.md` | how the modes are designed, and why |
-| `CUSTOMIZATIONS.md` | every change made to my Claude Code config, with the reason |
-| `knowledge/` | research behind the design: tested Claude Code findings, Claude Code's default instructions, egm usage notes |
+| `bin/cmode` | the mode launcher |
+| `tests/` | self-checks: `cmode-test`, `install-test` |
+| `docs/modes-design.md` | how the modes are designed, and why |
+| `docs/customizations.md` | current state of my Claude Code config, with the reason for each piece |
+| `docs/knowledge/` | research behind the design: tested Claude Code findings, Claude Code's default instructions, egm usage notes |
+| `AGENTS.md` | conventions for agents working in this repo |

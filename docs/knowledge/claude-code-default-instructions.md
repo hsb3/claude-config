@@ -1,6 +1,5 @@
+<!--What Claude sees before your AGENTS.md, summarized from a live session on 2026-11-08 (Claude Code 2.1.319, Opus 5.5, auto mode). This is a paraphrase, not the verbatim text. It changes with version, model and permission mode.-->
 # Claude Code default instructions: baseline
-
-What Claude sees before your AGENTS.md, summarized from a live session on 2026-11-08 (Claude Code 2.1.319, Opus 5.5, auto mode). This is a paraphrase, not the verbatim text. It changes with version, model and permission mode.
 
 ## Where instructions come from (in load order)
 
